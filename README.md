@@ -1,3 +1,3 @@
 # adventofcode
 
-My silly go/adventofcode tries.
+My silly [adventofcode](https://adventofcode.com/) tries.
