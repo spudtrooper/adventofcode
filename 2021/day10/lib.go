@@ -154,5 +154,25 @@ func firstIllegalCharWithStack(s *stack, chunk string) string {
 }
 
 func Part2(input string) int {
-	return -1
+	var total int
+	for _, line := range must.ReadStrings(input) {
+		var s stack
+		if char := firstIllegalCharWithStack(&s, line); char == "" {
+			log.Printf("stack: %s", s)
+			complete := ""
+			var score int
+			for {
+				c, more := s.Pop()
+				if !more {
+					break
+				}
+				score *= 5
+				score += autocompletePoints[rightMatching[c]]
+				complete += rightMatching[c]
+			}
+			log.Printf("complete:%s score:%d total:%d", complete, score, total)
+		}
+
+	}
+	return total
 }
