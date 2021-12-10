@@ -9,18 +9,6 @@ import (
 )
 
 var (
-	points = map[string]int{
-		")": 3,
-		"]": 57,
-		"}": 1197,
-		">": 25137,
-	}
-	autocompletePoints = map[string]int{
-		")": 1,
-		"]": 2,
-		"}": 3,
-		">": 4,
-	}
 	leftMatching = map[string]string{
 		")": "(",
 		"]": "[",
@@ -80,6 +68,12 @@ func (s *stackFinder) FirstIllegalChar(chunk string) string {
 }
 
 func Part1(input string) int {
+	points := map[string]int{
+		")": 3,
+		"]": 57,
+		"}": 1197,
+		">": 25137,
+	}
 	var score int
 	for _, line := range must.ReadStrings(input) {
 		var s stackFinder
@@ -91,6 +85,12 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
+	points := map[string]int{
+		")": 1,
+		"]": 2,
+		"}": 3,
+		">": 4,
+	}
 	var scores []int
 	for _, line := range must.ReadStrings(input) {
 		var s stackFinder
@@ -103,7 +103,7 @@ func Part2(input string) int {
 					break
 				}
 				score *= 5
-				score += autocompletePoints[rightMatching[p]]
+				score += points[rightMatching[p]]
 				complete += rightMatching[p]
 			}
 			log.Printf("%s - %d total points.", complete, score)
