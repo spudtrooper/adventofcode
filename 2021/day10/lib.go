@@ -35,6 +35,7 @@ var (
 	}
 )
 
+// https://www.educative.io/edpresso/how-to-implement-a-stack-in-golang
 type stack []string
 
 func (s *stack) Empty() bool {
@@ -47,43 +48,30 @@ func (s *stack) Push(str string) {
 
 func (s *stack) Pop() (string, bool) {
 	if s.Empty() {
-		return "", false
+		return "", true
 	}
 	index := len(*s) - 1
 	element := (*s)[index]
 	*s = (*s)[:index]
-	return element, true
+	return element, false
 }
 
-func firstIllegalChar(s *stack, chunk string) string {
-	// demand := func(want, right string, i int) (err bool) {
-	// 	p, more := s.Pop()
-	// 	if !more {
-	// 		log.Fatalf("should have more pos:%d: %s", i, s)
-	// 	}
-	// 	if p != want {
-	// 		err = true
-	// 		log.Printf("Expected %s, but found %s instead at %d in %s", rightMatching[p], right, i, chunk)
-	// 	}
-	// 	return
-	// }
+type stackFinder struct{ stack }
 
+func (s *stackFinder) FirstIllegalChar(chunk string) string {
 	for i, c := range strings.Split(chunk, "") {
 		switch c {
 		case "(", "[", "{", "<":
 			s.Push(c)
 		case ")", "]", "}", ">":
-			p, more := s.Pop()
-			if !more {
+			p, done := s.Pop()
+			if done {
 				log.Fatalf("should have more pos:%d: %s", i, s)
 			}
 			if want := leftMatching[c]; p != want {
 				log.Printf("Expected %s, but found %s instead at %d in %s", rightMatching[p], c, i, chunk)
 				return c
 			}
-			// if err := demand(leftMatching[c], c, i); err {
-			// 	return c
-			// }
 		default:
 			log.Fatalf("Invalid character at pos %d: %s", i, chunk)
 		}
@@ -94,8 +82,8 @@ func firstIllegalChar(s *stack, chunk string) string {
 func Part1(input string) int {
 	var score int
 	for _, line := range must.ReadStrings(input) {
-		var s stack
-		if c := firstIllegalChar(&s, line); c != "" {
+		var s stackFinder
+		if c := s.FirstIllegalChar(line); c != "" {
 			score += points[c]
 		}
 	}
@@ -105,21 +93,21 @@ func Part1(input string) int {
 func Part2(input string) int {
 	var scores []int
 	for _, line := range must.ReadStrings(input) {
-		var s stack
-		if c := firstIllegalChar(&s, line); c == "" {
+		var s stackFinder
+		if c := s.FirstIllegalChar(line); c == "" {
 			complete := ""
 			var score int
 			for {
-				p, more := s.Pop()
-				if !more {
+				p, done := s.Pop()
+				if done {
 					break
 				}
 				score *= 5
 				score += autocompletePoints[rightMatching[p]]
 				complete += rightMatching[p]
 			}
-			scores = append(scores, score)
 			log.Printf("%s - %d total points.", complete, score)
+			scores = append(scores, score)
 		}
 
 	}
