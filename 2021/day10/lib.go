@@ -2,6 +2,7 @@ package day10
 
 import (
 	"log"
+	"sort"
 	"strings"
 
 	"github.com/spudtrooper/adventofcode/common/must"
@@ -154,7 +155,7 @@ func firstIllegalCharWithStack(s *stack, chunk string) string {
 }
 
 func Part2(input string) int {
-	var total int
+	var scores []int
 	for _, line := range must.ReadStrings(input) {
 		var s stack
 		if char := firstIllegalCharWithStack(&s, line); char == "" {
@@ -170,9 +171,13 @@ func Part2(input string) int {
 				score += autocompletePoints[rightMatching[c]]
 				complete += rightMatching[c]
 			}
-			log.Printf("complete:%s score:%d total:%d", complete, score, total)
+			scores = append(scores, score)
+			log.Printf("%s - %d total points.", complete, score)
 		}
 
 	}
-	return total
+	sort.Ints(scores)
+	log.Printf("scores: %v", scores)
+	middle := scores[len(scores)/2]
+	return middle
 }
