@@ -9,13 +9,7 @@ import (
 )
 
 var (
-	leftMatching = map[string]string{
-		")": "(",
-		"]": "[",
-		"}": "{",
-		">": "<",
-	}
-	rightMatching = map[string]string{
+	matching = map[string]string{
 		"(": ")",
 		"[": "]",
 		"{": "}",
@@ -34,14 +28,14 @@ func (s *stack) Push(str string) {
 	*s = append(*s, str)
 }
 
-func (s *stack) Pop() (string, bool) {
+func (s *stack) Pop() string {
 	if s.Empty() {
-		return "", true
+		return ""
 	}
 	index := len(*s) - 1
 	element := (*s)[index]
 	*s = (*s)[:index]
-	return element, false
+	return element
 }
 
 type stackFinder struct{ stack }
@@ -52,12 +46,8 @@ func (s *stackFinder) FirstIllegalChar(chunk string) string {
 		case "(", "[", "{", "<":
 			s.Push(c)
 		case ")", "]", "}", ">":
-			p, done := s.Pop()
-			if done {
-				log.Fatalf("should have more pos:%d: %s", i, s)
-			}
-			if want := leftMatching[c]; p != want {
-				log.Printf("Expected %s, but found %s instead at %d in %s", rightMatching[p], c, i, chunk)
+			if p := s.Pop(); matching[p] != c {
+				log.Printf("Expected %s, but found %s instead at %d in %s", matching[p], c, i, chunk)
 				return c
 			}
 		default:
@@ -95,18 +85,15 @@ func Part2(input string) int {
 	for _, line := range must.ReadStrings(input) {
 		var s stackFinder
 		if c := s.FirstIllegalChar(line); c == "" {
-			complete := ""
 			var score int
 			for {
-				p, done := s.Pop()
-				if done {
+				p := s.Pop()
+				if p == "" {
 					break
 				}
 				score *= 5
-				score += points[rightMatching[p]]
-				complete += rightMatching[p]
+				score += points[matching[p]]
 			}
-			log.Printf("%s - %d total points.", complete, score)
 			scores = append(scores, score)
 		}
 
