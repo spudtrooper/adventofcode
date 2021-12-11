@@ -30,7 +30,7 @@ func Main(year, day int) error {
 	}
 
 	lib, err := writeFile(`	
-package {{.Pkg}}
+package lib
 
 func Part1(input string) int {
 	// TODO
@@ -51,7 +51,7 @@ func Part2(input string) int {
 	}
 
 	libTest, err := writeFile(`
-package {{.Pkg}}
+package lib
 
 import "testing"
 
