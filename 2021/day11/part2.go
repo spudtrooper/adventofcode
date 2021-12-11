@@ -13,5 +13,5 @@ var (
 
 func main() {
 	flag.Parse()
-	fmt.Printf("Part2: %d\n", day11.Part2(*input))
+	fmt.Printf("day11 Part2: %d\n", day11.Part2(*input))
 }

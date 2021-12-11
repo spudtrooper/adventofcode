@@ -115,62 +115,40 @@ func TestPart2(t *testing.T) {
 		return err
 	}
 
-	mainPart1, err := writeFile(`	
-	package main
+	writeMain := func(n int) (string, error) {
+		return writeFile(`	
+package main
 
-	import (
-		"flag"
-		"fmt"
-	
-		{{.Pkg}} "github.com/spudtrooper/adventofcode/{{.Year}}/{{.Pkg}}/lib"
-	)
-	
-	var (
-		input = flag.String("input", "{{.Year}}/{{.Pkg}}/testdata/testinput.txt", "test input")
-	)
-	
-	func main() {
-		flag.Parse()
-		fmt.Printf("Part1: %d\n", {{.Pkg}}.Part1(*input))
+import (
+	"flag"
+	"fmt"
+
+	{{.Pkg}} "github.com/spudtrooper/adventofcode/{{.Year}}/{{.Pkg}}/lib"
+)
+
+var (
+	input = flag.String("input", "{{.Year}}/{{.Pkg}}/testdata/testinput.txt", "test input")
+)
+
+func main() {
+	flag.Parse()
+	fmt.Printf("{{.Pkg}} Part{{.N}}: %d\n", {{.Pkg}}.Part{{.N}}(*input))
+}`, struct {
+			Pkg  string
+			Year int
+			N    int
+		}{
+			Pkg:  pkg,
+			Year: year,
+			N:    n,
+		}, mainDir, fmt.Sprintf("%d_%s_part%d.go", year, pkg, n))
 	}
-	
-	`, struct {
-		Pkg  string
-		Year int
-	}{
-		Pkg:  pkg,
-		Year: year,
-	}, mainDir, fmt.Sprintf("%d_%s_part1.go", year, pkg))
+
+	mainPart1, err := writeMain(1)
 	if err != nil {
 		return err
 	}
-
-	mainPart2, err := writeFile(`	
-	package main
-
-	import (
-		"flag"
-		"fmt"
-	
-		{{.Pkg}} "github.com/spudtrooper/adventofcode/{{.Year}}/{{.Pkg}}/lib"
-	)
-	
-	var (
-		input = flag.String("input", "{{.Year}}/{{.Pkg}}/testdata/testinput.txt", "test input")
-	)
-	
-	func main() {
-		flag.Parse()
-		fmt.Printf("Part2: %d\n", {{.Pkg}}.Part2(*input))
-	}
-	
-	`, struct {
-		Pkg  string
-		Year int
-	}{
-		Pkg:  pkg,
-		Year: year,
-	}, mainDir, fmt.Sprintf("%d_%s_part2.go", year, pkg))
+	mainPart2, err := writeMain(2)
 	if err != nil {
 		return err
 	}

@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"strings"
@@ -10,29 +9,14 @@ import (
 	"github.com/spudtrooper/adventofcode/common/must"
 )
 
-type octopuses []row
-type row []int
+type octopuses [][]int
 
 func (o octopuses) String() string {
-	var buf bytes.Buffer
-	white := color.New(color.FgWhite).Add(color.Bold)
-	for _, row := range o {
-		for _, x := range row {
-			if x == 0 {
-				white.Fprintf(&buf, "%d", x)
-			} else {
-				fmt.Fprintf(&buf, "%d", x)
-			}
-		}
-		buf.WriteString("\n")
-	}
-	return buf.String()
-}
-
-func (o octopuses) Debug() string {
-	var out []string
-	white := color.New(color.FgWhite).Add(color.Bold)
-	yellow := color.New(color.FgYellow).Add(color.Bold)
+	var (
+		out    []string
+		white  = color.New(color.FgWhite).Add(color.Bold)
+		yellow = color.New(color.FgYellow).Add(color.Bold)
+	)
 	for _, row := range o {
 		var r []string
 		for _, x := range row {
@@ -55,16 +39,13 @@ func (o octopuses) Dims() (width int, height int) {
 }
 
 func (o octopuses) Step() (int, octopuses) {
-	var new octopuses
-	new = append(new, o...)
+	new := append(octopuses{}, o...)
 
 	for y, row := range new {
 		for x := range row {
 			new[y][x]++
 		}
 	}
-
-	log.Printf("After initial step:\n%v\n", new.Debug())
 
 	deltas := []struct {
 		dx, dy int
@@ -81,14 +62,14 @@ func (o octopuses) Step() (int, octopuses) {
 
 	flashes := 0
 	for {
-		startFlashes := flashes
+		newFlashes := 0
 		for y, row := range new {
 			for x := range row {
 				if new[y][x] < 10 {
 					continue
 				}
 				new[y][x] = 0
-				flashes++
+				newFlashes++
 				for _, d := range deltas {
 					nx, ny := x+d.dx, y+d.dy
 					if w, h := new.Dims(); nx < 0 || ny < 0 || nx >= w || ny >= h {
@@ -101,11 +82,11 @@ func (o octopuses) Step() (int, octopuses) {
 				}
 			}
 		}
-		if startFlashes == flashes {
+		flashes += newFlashes
+		if newFlashes == 0 {
 			break
 		}
 	}
-	log.Printf("After check(s):\n%v\n", new.Debug())
 
 	return flashes, new
 }
@@ -113,11 +94,10 @@ func (o octopuses) Step() (int, octopuses) {
 func Part1(input string) int {
 	var o octopuses
 	for _, line := range must.ReadStrings(input) {
-		row := must.SplitInts(line, "")
-		o = append(o, row)
+		o = append(o, must.SplitInts(line, ""))
 	}
 
-	log.Printf("Initially:\n%s\n", o.Debug())
+	log.Printf("Initially:\n%v\n", o)
 
 	var total int
 	for i := 0; i < 100; i++ {
@@ -126,12 +106,36 @@ func Part1(input string) int {
 		o = new
 	}
 
-	log.Printf("Finally:\n%s\n", o.Debug())
+	log.Printf("Finally:\n%v\n", o)
 
 	return total
 }
 
 func Part2(input string) int {
-	// TODO
-	return -1
+	var o octopuses
+	for _, line := range must.ReadStrings(input) {
+		o = append(o, must.SplitInts(line, ""))
+	}
+
+	log.Printf("Initially:\n%v\n", o)
+
+	var step int
+	for step = 1; ; step++ {
+		o.Step()
+		all := true
+		for _, row := range o {
+			for _, x := range row {
+				if x != 0 {
+					all = false
+				}
+			}
+		}
+		if all {
+			break
+		}
+	}
+
+	log.Printf("Finally:\n%v\n", o)
+
+	return step
 }
