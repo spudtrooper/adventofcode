@@ -117,25 +117,10 @@ func Part2(input string) int {
 		o = append(o, must.SplitInts(line, ""))
 	}
 
-	log.Printf("Initially:\n%v\n", o)
-
-	var step int
-	for step = 1; ; step++ {
-		o.Step()
-		all := true
-		for _, row := range o {
-			for _, x := range row {
-				if x != 0 {
-					all = false
-				}
-			}
-		}
-		if all {
-			break
+	w, h := o.Dims()
+	for step := 1; ; step++ {
+		if f, _ := o.Step(); f == w*h {
+			return step
 		}
 	}
-
-	log.Printf("Finally:\n%v\n", o)
-
-	return step
 }
