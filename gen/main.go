@@ -16,7 +16,15 @@ import (
 
 func Main(year, day int) error {
 	pkg := fmt.Sprintf("day%02d", day)
-	dir, err := io.MkdirAll(fmt.Sprintf("%d", year), pkg)
+	dayDir, err := io.MkdirAll(fmt.Sprintf("%d", year), pkg)
+	if err != nil {
+		return err
+	}
+	libDir, err := io.MkdirAll(dayDir, "lib")
+	if err != nil {
+		return err
+	}
+	mainDir, err := io.MkdirAll(dayDir, "main")
 	if err != nil {
 		return err
 	}
@@ -37,7 +45,7 @@ func Part2(input string) int {
 		Pkg string
 	}{
 		Pkg: pkg,
-	}, dir, "lib.go")
+	}, libDir, "lib.go")
 	if err != nil {
 		return err
 	}
@@ -102,12 +110,72 @@ func TestPart2(t *testing.T) {
 		Pkg string
 	}{
 		Pkg: pkg,
-	}, dir, "lib_test.go")
+	}, libDir, "lib_test.go")
 	if err != nil {
 		return err
 	}
 
-	testdataDir, err := io.MkdirAll(dir, "testdata")
+	mainPart1, err := writeFile(`	
+	package main
+
+	import (
+		"flag"
+		"fmt"
+	
+		{{.Pkg}} "github.com/spudtrooper/adventofcode/{{.Year}}/{{.Pkg}}/lib"
+	)
+	
+	var (
+		input = flag.String("input", "{{.Year}}/{{.Pkg}}/testdata/testinput.txt", "test input")
+	)
+	
+	func main() {
+		flag.Parse()
+		fmt.Printf("Part1: %d\n", {{.Pkg}}.Part1(*input))
+	}
+	
+	`, struct {
+		Pkg  string
+		Year int
+	}{
+		Pkg:  pkg,
+		Year: year,
+	}, mainDir, fmt.Sprintf("%d_%s_part1.go", year, pkg))
+	if err != nil {
+		return err
+	}
+
+	mainPart2, err := writeFile(`	
+	package main
+
+	import (
+		"flag"
+		"fmt"
+	
+		{{.Pkg}} "github.com/spudtrooper/adventofcode/{{.Year}}/{{.Pkg}}/lib"
+	)
+	
+	var (
+		input = flag.String("input", "{{.Year}}/{{.Pkg}}/testdata/testinput.txt", "test input")
+	)
+	
+	func main() {
+		flag.Parse()
+		fmt.Printf("Part2: %d\n", {{.Pkg}}.Part2(*input))
+	}
+	
+	`, struct {
+		Pkg  string
+		Year int
+	}{
+		Pkg:  pkg,
+		Year: year,
+	}, mainDir, fmt.Sprintf("%d_%s_part2.go", year, pkg))
+	if err != nil {
+		return err
+	}
+
+	testdataDir, err := io.MkdirAll(dayDir, "testdata")
 	if err != nil {
 		return err
 	}
@@ -122,8 +190,18 @@ func TestPart2(t *testing.T) {
 	if err := run("go", "fmt", lib, libTest); err != nil {
 		return err
 	}
+	if err := run("go", "fmt", mainPart1, mainPart2); err != nil {
+		return err
+	}
 
 	if err := run("go", "test", lib, libTest); err != nil {
+		return err
+	}
+
+	if err := run("go", "run", mainPart1); err != nil {
+		return err
+	}
+	if err := run("go", "run", mainPart2); err != nil {
 		return err
 	}
 
