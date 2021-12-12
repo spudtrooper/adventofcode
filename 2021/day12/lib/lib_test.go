@@ -11,13 +11,23 @@ func TestPart1(t *testing.T) {
 		{
 			name:  "testinput",
 			input: "testdata/testinput.txt",
-			want:  -1, // TODO
+			want:  10,
 		},
-		// {
-		// 	name:  "part1",
-		//	input: "testdata/input.txt",
-		//	want:  -1, // TODO
-		// },
+		{
+			name:  "testinput-larger",
+			input: "testdata/testinput-larger.txt",
+			want:  19,
+		},
+		{
+			name:  "testinput-even-larger",
+			input: "testdata/testinput-even-larger.txt",
+			want:  226,
+		},
+		{
+			name:  "part1",
+			input: "testdata/input.txt",
+			want:  3679,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -37,13 +47,23 @@ func TestPart2(t *testing.T) {
 		{
 			name:  "testinput",
 			input: "testdata/testinput.txt",
-			want:  -1, // TODO
+			want:  36,
 		},
-		// {
-		// 	name:  "part2",
-		//	input: "testdata/input.txt",
-		//	want:  -1, // TODO
-		// },
+		{
+			name:  "testinput-larger",
+			input: "testdata/testinput-larger.txt",
+			want:  103,
+		},
+		{
+			name:  "testinput-even-larger",
+			input: "testdata/testinput-even-larger.txt",
+			want:  3509,
+		},
+		{
+			name:  "part2",
+			input: "testdata/input.txt",
+			want:  107395,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
