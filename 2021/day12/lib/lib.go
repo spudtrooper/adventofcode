@@ -77,9 +77,12 @@ func Part1(input string) int {
 	consider := func(p path, n string) bool {
 		seen := map[string]bool{}
 		for _, n := range p {
+			if !isLower(n) {
+				continue
+			}
 			seen[n] = true
 		}
-		return !isLower(n) || !seen[n]
+		return !seen[n]
 	}
 	paths := FindPaths(g, consider)
 
