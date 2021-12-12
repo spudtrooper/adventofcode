@@ -93,7 +93,7 @@ func (o octopuses) Step() (int, octopuses) {
 
 func Part1(input string) int {
 	var o octopuses
-	for _, line := range must.ReadStrings(input) {
+	for _, line := range must.ReadLines(input) {
 		o = append(o, must.SplitInts(line, ""))
 	}
 
@@ -113,7 +113,7 @@ func Part1(input string) int {
 
 func Part2(input string) int {
 	var o octopuses
-	for _, line := range must.ReadStrings(input) {
+	for _, line := range must.ReadLines(input) {
 		o = append(o, must.SplitInts(line, ""))
 	}
 

@@ -11,11 +11,24 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/fatih/color"
+	"github.com/pkg/errors"
 	"github.com/spudtrooper/goutil/io"
+	"github.com/spudtrooper/goutil/task"
 )
 
-func Main(year, day int) error {
+func Main(year, day int, mainOpts ...Option) error {
+	opts := makeOptionImpl(mainOpts...)
+
 	pkg := fmt.Sprintf("day%02d", day)
+
+	if !opts.force {
+		dayDir := path.Join(fmt.Sprintf("%d", year), pkg)
+		if io.FileExists(dayDir) {
+			return errors.Errorf("%s exists, pass --force to overwrite it", dayDir)
+		}
+	}
+
 	dayDir, err := io.MkdirAll(fmt.Sprintf("%d", year), pkg)
 	if err != nil {
 		return err
@@ -24,21 +37,34 @@ func Main(year, day int) error {
 	if err != nil {
 		return err
 	}
-	mainDir, err := io.MkdirAll(dayDir, "main")
-	if err != nil {
-		return err
-	}
 
 	lib, err := writeFile(`	
 package lib
 
+import (
+	"log"
+
+	"github.com/spudtrooper/adventofcode/common/must"
+)
+
+
 func Part1(input string) int {
-	// TODO
+	for _, line := range must.ReadLines(input) {
+		// TODO
+		if false {
+			log.Println(line)
+		}
+	}
 	return -1
 }
 
 func Part2(input string) int {
-	// TODO
+	for _, line := range must.ReadLines(input) {
+		// TODO
+		if false {
+			log.Println(line)
+		}
+	}
 	return -1
 }
 `, struct {
@@ -127,7 +153,7 @@ import (
 )
 
 var (
-	input = flag.String("input", "{{.Year}}/{{.Pkg}}/testdata/testinput.txt", "test input")
+	input = flag.String("input", "{{.Year}}/{{.Pkg}}/lib/testdata/testinput.txt", "test input")
 )
 
 func main() {
@@ -141,7 +167,12 @@ func main() {
 			Pkg:  pkg,
 			Year: year,
 			N:    n,
-		}, mainDir, fmt.Sprintf("%d_%s_part%d.go", year, pkg, n))
+		}, dayDir, fmt.Sprintf("part%d.go", n))
+	}
+
+	testdataDir, err := io.MkdirAll(libDir, "testdata")
+	if err != nil {
+		return err
 	}
 
 	mainPart1, err := writeMain(1)
@@ -153,33 +184,21 @@ func main() {
 		return err
 	}
 
-	testdataDir, err := io.MkdirAll(dayDir, "testdata")
-	if err != nil {
-		return err
-	}
+	tb := task.MakeBuilder(task.Color(color.New(color.FgYellow)))
 
-	if err := touch(testdataDir, "input.txt"); err != nil {
-		return err
-	}
-	if err := touch(testdataDir, "testinput.txt"); err != nil {
-		return err
-	}
+	tb.Add("creating input.txt", touchFn(testdataDir, "input.txt"))
+	tb.Add("creating testinput.txt", touchFn(testdataDir, "testinput.txt"))
 
-	if err := run("go", "fmt", lib, libTest); err != nil {
-		return err
-	}
-	if err := run("go", "fmt", mainPart1, mainPart2); err != nil {
-		return err
-	}
+	tb.Add("formatting test files", runFn("go", "fmt", lib, libTest))
+	tb.Add("formatting main files", runFn("go", "fmt", mainPart1, mainPart2))
 
-	if err := run("go", "test", lib, libTest); err != nil {
-		return err
-	}
+	tb.Add("testing test files", runFn("go", "test", lib, libTest))
 
-	if err := run("go", "run", mainPart1); err != nil {
-		return err
-	}
-	if err := run("go", "run", mainPart2); err != nil {
+	tb.Add("testing main part1", runFn("go", "run", mainPart1))
+	tb.Add("testing main part2", runFn("go", "run", mainPart2))
+	tb.Add("done", func() error { return nil })
+
+	if err := tb.Build().Go(); err != nil {
 		return err
 	}
 
@@ -208,7 +227,15 @@ func touch(dir, outFileName string) error {
 	log.Printf("touched %s", outFile)
 	return nil
 }
+
+func touchFn(dir, outFileName string) func() error {
+	return func() error {
+		return touch(dir, outFileName)
+	}
+}
+
 func run(command string, args ...string) error {
+	log.Printf("running %s %s", command, strings.Join(args, " "))
 	cmd := exec.Command(command, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -216,6 +243,12 @@ func run(command string, args ...string) error {
 		return err
 	}
 	return nil
+}
+
+func runFn(command string, args ...string) func() error {
+	return func() error {
+		return run(command, args...)
+	}
 }
 
 func renderTemplate(t string, name string, data interface{}) ([]byte, error) {

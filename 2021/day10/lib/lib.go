@@ -65,7 +65,7 @@ func Part1(input string) int {
 		">": 25137,
 	}
 	var score int
-	for _, line := range must.ReadStrings(input) {
+	for _, line := range must.ReadLines(input) {
 		var s stackFinder
 		if c := s.FirstIllegalChar(line); c != "" {
 			score += points[c]
@@ -82,7 +82,7 @@ func Part2(input string) int {
 		">": 4,
 	}
 	var scores []int
-	for _, line := range must.ReadStrings(input) {
+	for _, line := range must.ReadLines(input) {
 		var s stackFinder
 		if c := s.FirstIllegalChar(line); c == "" {
 			var score int

@@ -100,7 +100,7 @@ func TestReadStrings(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			arr, err := ReadStrings(tc.input)
+			arr, err := ReadLines(tc.input)
 			if err != nil {
 				t.Fatalf(err.Error())
 			}

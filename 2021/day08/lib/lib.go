@@ -11,7 +11,7 @@ import (
 
 func Part1(input string) int {
 	var uniqueValues int
-	for _, line := range must.ReadStrings(input) {
+	for _, line := range must.ReadLines(input) {
 		parts := strings.Split(line, "|")
 		outputValues := strings.Split(strings.TrimSpace(parts[1]), " ")
 		for _, s := range outputValues {
@@ -127,7 +127,7 @@ func Part2(input string) int {
 	}
 
 	var outputValueSum int
-	for _, line := range must.ReadStrings(input) {
+	for _, line := range must.ReadLines(input) {
 		parts := strings.Split(line, "|")
 		outputs := strings.Split(strings.TrimSpace(parts[0]), " ")
 		signals := strings.Split(strings.TrimSpace(parts[1]), " ")

@@ -21,7 +21,7 @@ func (r *result) String() string {
 }
 
 func Part1(input string) (*result, error) {
-	codes, err := common.ReadStrings(input)
+	codes, err := common.ReadLines(input)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (r *part2result) String() string {
 }
 
 func Part2(input string) (*part2result, error) {
-	codes, err := common.ReadStrings(input)
+	codes, err := common.ReadLines(input)
 	if err != nil {
 		return nil, err
 	}

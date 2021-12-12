@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	year = flag.Int("year", 0, "year to generate")
-	day  = flag.Int("day", 0, "day to generate")
+	year  = flag.Int("year", 0, "year to generate")
+	day   = flag.Int("day", 0, "day to generate")
+	force = flag.Bool("force", false, "overwrite existing files")
 )
 
 func realMain() error {
@@ -20,7 +21,7 @@ func realMain() error {
 	if *day == 0 {
 		return errors.Errorf("--day required")
 	}
-	if err := gen.Main(*year, *day); err != nil {
+	if err := gen.Main(*year, *day, gen.Force(*force)); err != nil {
 		return err
 	}
 	return nil

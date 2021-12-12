@@ -24,8 +24,8 @@ func ParseInt(s string, base, bits int) int64 {
 	return res
 }
 
-func ReadStrings(input string) []string {
-	res, err := common.ReadStrings(input)
+func ReadLines(input string) []string {
+	res, err := common.ReadLines(input)
 	chk(err)
 	return res
 }

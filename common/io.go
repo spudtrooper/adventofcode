@@ -25,8 +25,8 @@ func ReadFile(input string, parse func(line string) (interface{}, error)) ([]int
 	return res, nil
 }
 
-// ReadStrings reads a list of strings
-func ReadStrings(input string) ([]string, error) {
+// ReadLines reads a list of strings
+func ReadLines(input string) ([]string, error) {
 	b, err := ioutil.ReadFile(input)
 	if err != nil {
 		return nil, err

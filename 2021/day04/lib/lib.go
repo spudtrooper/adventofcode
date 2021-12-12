@@ -118,7 +118,7 @@ func (g *game) String() string {
 }
 
 func readGame(input string) game {
-	lines := must.ReadStrings(input)
+	lines := must.ReadLines(input)
 
 	readNums := func(line, sep string) []int {
 		var nums []int

@@ -50,7 +50,7 @@ func (h heightmap) LowPoints(f func(x, y int)) {
 
 func Part1(input string) int {
 	var h heightmap
-	for _, line := range must.ReadStrings(input) {
+	for _, line := range must.ReadLines(input) {
 		row := must.SplitInts(line, "")
 		h = append(h, row)
 	}
@@ -99,7 +99,7 @@ func findBasin(h heightmap, x, y int, basin pointSet) {
 
 func Part2(input string) int {
 	var h heightmap
-	for _, line := range must.ReadStrings(input) {
+	for _, line := range must.ReadLines(input) {
 		row := must.SplitInts(line, "")
 		h = append(h, row)
 	}
