@@ -6,7 +6,21 @@ import (
 	"github.com/thomaso-mirodin/intmath/intgr"
 )
 
-func Min(it Iter) int {
+func Min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func Max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func MinIter(it Iter) int {
 	if !it.HasNext() {
 		return 0
 	}
@@ -21,7 +35,7 @@ func Min(it Iter) int {
 	return min
 }
 
-func Max(it Iter) int {
+func MaxIter(it Iter) int {
 	if !it.HasNext() {
 		return 0
 	}
@@ -134,11 +148,11 @@ func (it *arrBackedIter) Sum() int {
 }
 
 func (it *arrBackedIter) Min() int {
-	return Min(it)
+	return MinIter(it)
 }
 
 func (it *arrBackedIter) Max() int {
-	return Max(it)
+	return MaxIter(it)
 }
 
 func (it *arrBackedIter) Map(fn func(i int) int) Iter {

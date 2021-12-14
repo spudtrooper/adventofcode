@@ -101,7 +101,7 @@ func TestPart1(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if want, got := tc.want, Part1(tc.input); want != got {
-				t.Errorf("Part1: want(%d) != got(%d)", want, got)
+				t.Errorf("{{.Pkg}} Part1: want(%d) != got(%d)", want, got)
 			}
 		})
 	}
@@ -127,7 +127,7 @@ func TestPart2(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if want, got := tc.want, Part2(tc.input); want != got {
-				t.Errorf("Part2: want(%d) != got(%d)", want, got)
+				t.Errorf("{{.Pkg}} Part2: want(%d) != got(%d)", want, got)
 			}
 		})
 	}

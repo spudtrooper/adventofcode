@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/spudtrooper/adventofcode/common/ints"
 	"github.com/spudtrooper/adventofcode/common/must"
 )
 
@@ -155,13 +156,6 @@ func Part2(input string) int {
 	var coords []coord
 	var maxX, maxY int
 
-	max := func(a, b int) int {
-		if a > b {
-			return a
-		}
-		return b
-	}
-
 	hash := func(p paper, c coord) int {
 		return p.width*c.y + c.x
 	}
@@ -177,8 +171,8 @@ func Part2(input string) int {
 			parts := must.SplitInts(line, ",")
 			x, y := parts[0], parts[1]
 			coords = append(coords, coord{x: x, y: y})
-			maxX = max(maxX, x)
-			maxY = max(maxY, y)
+			maxX = ints.Max(maxX, x)
+			maxY = ints.Max(maxY, y)
 		}
 	}
 

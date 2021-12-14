@@ -5,8 +5,8 @@ import (
 	"math"
 	"strings"
 
+	"github.com/spudtrooper/adventofcode/common/ints"
 	"github.com/spudtrooper/adventofcode/common/must"
-	"github.com/spudtrooper/goutil/term"
 )
 
 func Part1(input string) int {
@@ -31,7 +31,6 @@ func Part1(input string) int {
 				log.Fatalf("no match for ch=%s for rules=%+v", ch, rules)
 			}
 			out = append(out, chars[i], matched)
-			log.Printf("ch=%s matched=%s", ch, matched)
 		}
 		out = append(out, chars[len(chars)-1])
 		return strings.Join(out, "")
@@ -45,14 +44,11 @@ func Part1(input string) int {
 		return hist
 	}
 
-	ts, err := term.DetectTerminalSize()
-	must.Check(err)
-
 	log.Printf("Template:     %s", tmpl)
 	s := tmpl
 	for i := 0; i < 10; i++ {
 		s = step(s)
-		if len(s) > ts.Width-40 {
+		if len(s) > 200 {
 			log.Printf("After step %d: (%d) ...", i+1, len(s))
 		} else {
 			log.Printf("After step %d: %s (%d)", i+1, s, len(s))
@@ -60,22 +56,13 @@ func Part1(input string) int {
 	}
 
 	hist := makeHist(s)
-	log.Printf("hist: %+v", hist)
-
-	minVal, maxVal := math.MaxInt, math.MinInt
-	// var minChar, maxChar rune
+	min, max := math.MaxInt, math.MinInt
 	for _, v := range hist {
-		if v < minVal {
-			minVal = v
-			// minChar = c
-		}
-		if v > maxVal {
-			maxVal = v
-			// maxChar = c
-		}
+		min = ints.Min(min, v)
+		max = ints.Max(max, v)
 	}
 
-	return maxVal - minVal
+	return max - min
 }
 
 func Part2(input string) int {
