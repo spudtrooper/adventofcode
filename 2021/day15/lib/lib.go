@@ -2,7 +2,6 @@ package lib
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/spudtrooper/adventofcode/common/must"
@@ -24,7 +23,7 @@ func (b board) String() string {
 		for _, c := range row {
 			line = append(line, fmt.Sprintf("%0d", c))
 		}
-		lines = append(lines, strings.Join(line, " "))
+		lines = append(lines, strings.Join(line, ""))
 	}
 	return strings.Join(lines, "\n")
 }
@@ -35,6 +34,10 @@ func Part1(input string) int {
 		b = append(b, must.SplitInts(line, ""))
 	}
 
+	return findShortestPath(b)
+}
+
+func findShortestPath(b board) int {
 	width, height := b.Dims()
 
 	var vs [][]*vertex
@@ -49,13 +52,21 @@ func Part1(input string) int {
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 			v := vs[y][x]
+			if x > 0 {
+				d := vs[y][x-1]
+				v.edges = append(v.edges, edge{destination: d, weight: float64(b[d.y][d.x])})
+			}
 			if x < width-1 {
 				d := vs[y][x+1]
-				v.edges = append(v.edges, edge{destination: d, weight: float64(d.risk)})
+				v.edges = append(v.edges, edge{destination: d, weight: float64(b[d.y][d.x])})
+			}
+			if y > 0 {
+				d := vs[y-1][x]
+				v.edges = append(v.edges, edge{destination: d, weight: float64(b[d.y][d.y])})
 			}
 			if y < height-1 {
 				d := vs[y+1][x]
-				v.edges = append(v.edges, edge{destination: d, weight: float64(d.risk)})
+				v.edges = append(v.edges, edge{destination: d, weight: float64(b[d.y][d.x])})
 			}
 		}
 	}
@@ -67,19 +78,19 @@ func Part1(input string) int {
 	var sum int
 	for i := 1; i < len(path); i++ {
 		v := path[i].(*vertex)
-		sum += v.risk
+		sum += b[v.y][v.x]
 	}
 
 	return sum
 }
 
 type vertex struct {
-	risk  int
+	x, y  int
 	edges []edge
 }
 
 func makeVertex(b board, x, y int) *vertex {
-	return &vertex{risk: b[y][x]}
+	return &vertex{x: x, y: y}
 }
 
 func (v *vertex) Edges() []dijkstra.Edge {
@@ -105,11 +116,32 @@ func (e edge) Weight() float64 {
 }
 
 func Part2(input string) int {
+	var b board
 	for _, line := range must.ReadLines(input) {
-		// TODO
-		if false {
-			log.Println(line)
+		b = append(b, must.SplitInts(line, ""))
+	}
+
+	width, height := b.Dims()
+
+	fullBoard := board{}
+	for i := 0; i < 5*height; i++ {
+		fullBoard = append(fullBoard, make([]int, width*5))
+	}
+
+	fullWidth, fullHeight := fullBoard.Dims()
+	for y := 0; y < fullHeight; y++ {
+		for x := 0; x < fullWidth; x++ {
+			if x < width && y < height {
+				fullBoard[y][x] = b[y][x]
+			} else if x < width {
+				fullBoard[y][x] = fullBoard[y-height][x]%9 + 1
+			} else if y < height {
+				fullBoard[y][x] = fullBoard[y][x-width]%9 + 1
+			} else {
+				fullBoard[y][x] = (fullBoard[y-height][x-width]%9+1)%9 + 1
+			}
 		}
 	}
-	return -1
+
+	return findShortestPath(fullBoard)
 }

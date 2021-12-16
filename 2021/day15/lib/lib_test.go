@@ -18,6 +18,11 @@ func TestPart1(t *testing.T) {
 			input: "testdata/input.txt",
 			want:  702,
 		},
+		{
+			name:  "part1",
+			input: "testdata/testinput-large.txt",
+			want:  315,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -37,13 +42,13 @@ func TestPart2(t *testing.T) {
 		{
 			name:  "testinput",
 			input: "testdata/testinput.txt",
-			want:  -1, // TODO
+			want:  320,
 		},
-		// {
-		// 	name:  "part2",
-		//	input: "testdata/input.txt",
-		//	want:  -1, // TODO
-		// },
+		{
+			name:  "part2",
+			input: "testdata/input.txt",
+			want:  2956,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
