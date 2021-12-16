@@ -40,7 +40,7 @@ func TestMin(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if want, got := tc.want, Min(FromArray(&tc.input)); want != got {
+			if want, got := tc.want, MinIter(FromArray(&tc.input)); want != got {
 				t.Errorf("Min: want(%d) != got(%d)", want, got)
 			}
 			if want, got := tc.want, FromArray(&tc.input).Min(); want != got {
@@ -138,7 +138,7 @@ func TestMax(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if want, got := tc.want, Max(FromArray(&tc.input)); want != got {
+			if want, got := tc.want, MaxIter(FromArray(&tc.input)); want != got {
 				t.Errorf("Max: want(%d) != got(%d)", want, got)
 			}
 			if want, got := tc.want, FromArray(&tc.input).Max(); want != got {

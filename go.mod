@@ -6,6 +6,7 @@ replace github.com/spudtrooper/goutil v0.1.18 => ../goutil
 
 require (
 	github.com/fatih/color v1.13.0
+	github.com/flemeur/go-shortestpath v0.0.0-20190814222641-c186ab48e496
 	github.com/go-errors/errors v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/spudtrooper/goutil v0.1.18
