@@ -2,7 +2,9 @@ package lib
 
 import (
 	"log"
+	"math"
 
+	"github.com/spudtrooper/adventofcode/common/ints"
 	"github.com/spudtrooper/adventofcode/common/must"
 )
 
@@ -25,34 +27,7 @@ var (
 		"E": "1110",
 		"F": "1111",
 	}
-	b2h = map[string]string{
-		"0000": "0",
-		"0001": "1",
-		"0010": "2",
-		"0011": "3",
-		"0100": "4",
-		"0101": "5",
-		"0110": "6",
-		"0111": "7",
-		"1000": "8",
-		"1001": "9",
-		"1010": "A",
-		"1011": "B",
-		"1100": "C",
-		"1101": "D",
-		"1110": "E",
-		"1111": "F",
-	}
 )
-
-// https://stackoverflow.com/questions/1752414/how-to-reverse-a-string-in-go
-func Reverse(s string) string {
-	r := []rune(s)
-	for i, j := 0, len(r)-1; i < len(r)/2; i, j = i+1, j-1 {
-		r[i], r[j] = r[j], r[i]
-	}
-	return string(r)
-}
 
 type scanner struct {
 	input string
@@ -84,53 +59,123 @@ type literalValue struct {
 	num int
 }
 
+type packets struct {
+	packets []packet
+}
+
 func parseInt(s string) int {
 	return int(must.ParseInt(s, 2, 64))
 }
 
-func parse(s *scanner) []*packet {
+func versions(p packet) int {
+	if p.id == 4 {
+		return p.version
+	}
+	res := p.version
+	ps := p.payload.(*packets)
+	for _, p := range ps.packets {
+		res += versions(p)
+	}
+	return res
+}
+
+func parse(s *scanner) packet {
 	version := parseInt(s.next(3))
 	id := parseInt(s.next(3))
 
-	p := &packet{
-		version: version,
-		id:      id,
-	}
-
 	if id == 4 {
-		num := ""
-		for s.hasMore() {
+		for num := ""; s.hasMore(); {
 			next := s.next(5)
 			fst, lst := next[0:1], next[1:]
 			num += lst
 			if fst == "0" {
-				break
+				return packet{
+					version: version,
+					id:      id,
+					payload: &literalValue{num: parseInt(num)},
+				}
 			}
 		}
-		p.payload = &literalValue{
-			num: parseInt(num),
-		}
-		return []*packet{p}
 	}
 
-	res := []*packet{p}
-
-	i := parseInt(s.next(1))
-	if i == 0 {
+	ps := []packet{}
+	if i := parseInt(s.next(1)); i == 0 {
 		l := parseInt(s.next(15))
-		packets := s.next(l)
-		for sub := makeScanner(packets); sub.hasMore(); {
-			res = append(res, parse(sub)...)
+		rest := s.next(l)
+		for sub := makeScanner(rest); sub.hasMore(); {
+			ps = append(ps, parse(sub))
 		}
 	} else {
 		l := parseInt(s.next(11))
 		for i := 0; i < l; i++ {
 			p := parse(s)
-			res = append(res, p...)
+			ps = append(ps, p)
 		}
 	}
 
-	return res
+	return packet{
+		version: version,
+		id:      id,
+		payload: &packets{
+			packets: ps,
+		},
+	}
+}
+
+func value(p packet) int {
+	switch p.id {
+	case 4:
+		p := p.payload.(*literalValue)
+		return p.num
+	case 0:
+		ps := p.payload.(*packets)
+		res := 0
+		for _, p := range ps.packets {
+			res += value(p)
+		}
+		return res
+	case 1:
+		ps := p.payload.(*packets)
+		res := 1
+		for _, p := range ps.packets {
+			res *= value(p)
+		}
+		return res
+	case 2:
+		ps := p.payload.(*packets)
+		res := math.MaxInt
+		for _, p := range ps.packets {
+			res = ints.Min(res, value(p))
+		}
+		return res
+	case 3:
+		ps := p.payload.(*packets)
+		res := math.MinInt
+		for _, p := range ps.packets {
+			res = ints.Max(res, value(p))
+		}
+		return res
+	case 5:
+		ps := p.payload.(*packets)
+		if fst, snd := value(ps.packets[0]), value(ps.packets[1]); fst > snd {
+			return 1
+		}
+		return 0
+	case 6:
+		ps := p.payload.(*packets)
+		if fst, snd := value(ps.packets[0]), value(ps.packets[1]); fst < snd {
+			return 1
+		}
+		return 0
+	case 7:
+		ps := p.payload.(*packets)
+		if fst, snd := value(ps.packets[0]), value(ps.packets[1]); fst == snd {
+			return 1
+		}
+		return 0
+	}
+
+	panic("fuck my life")
 }
 
 func Part1(input string) int {
@@ -142,22 +187,23 @@ func Part1(input string) int {
 	}
 
 	s := makeScanner(bin)
-	ps := parse(s)
-
-	res := 0
-	for _, p := range ps {
-		log.Printf("p: %+v", p)
-		res += p.version
-	}
-	return res
+	p := parse(s)
+	return versions(p)
 }
 
 func Part2(input string) int {
-	for _, line := range must.ReadLines(input) {
-		// TODO
-		if false {
-			log.Println(line)
-		}
+	packet := must.ReadAllFile(input)
+	return Part2FromString(packet)
+}
+
+func Part2FromString(packet string) int {
+	var bin string
+	for _, r := range packet {
+		bin += h2b[string(r)]
 	}
-	return -1
+
+	s := makeScanner(bin)
+	p := parse(s)
+
+	return value(p)
 }
