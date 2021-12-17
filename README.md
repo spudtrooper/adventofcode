@@ -9,3 +9,9 @@ To start a new day *N*:
 ```
 
 then the new code will be in `2021/day<N>`.
+
+To test everyting:
+
+```bash
+./scripts/testall.sh
+```
