@@ -5,6 +5,7 @@ import (
 	"math"
 	"regexp"
 
+	"github.com/spudtrooper/adventofcode/common"
 	"github.com/spudtrooper/adventofcode/common/ints"
 	"github.com/spudtrooper/adventofcode/common/must"
 )
@@ -14,42 +15,35 @@ var (
 	inputRE = regexp.MustCompile(`target area: x=([\-\+]?\d+)\.\.([\-\+]?\d+), y=([\-\+]?\d+)\.\.([\-\+]?\d+)`)
 )
 
-type coord struct {
-	x, y int
-}
-
 type velocity struct {
 	x, y int
 }
 
 type probe struct {
 	vel velocity
-	pos coord
+	pos common.Point
 }
 
-type target struct {
-	nw, se coord
-}
+type target common.Rect
 
 func findHighestY(t target, vel velocity) (highest int, hitTarget bool) {
-	p := probe{vel: vel}
+	p := probe{vel: vel, pos: common.MakePoint(0, 0)}
 	highest = math.MinInt
 	for {
-		if x, y := p.pos.x, p.pos.y; x >= t.nw.x && x <= t.se.x && y <= t.nw.y && y >= t.se.y {
+		if p.pos.Inside(t) {
 			hitTarget = true
 		}
-		highest = ints.Max(highest, p.pos.y)
-		p.pos.x += p.vel.x
-		p.pos.y += p.vel.y
+		highest = ints.Max(highest, p.pos.Y())
+		p.pos = p.pos.Move(p.vel.x, p.vel.y)
 		if p.vel.x > 0 {
 			p.vel.x--
 		} else if p.vel.x < 0 {
 			p.vel.x++
 		}
 		p.vel.y--
-		if (p.vel.x > 0 && p.pos.x > t.se.x) ||
-			(p.vel.x < 0 && p.pos.x < t.nw.x) ||
-			(p.vel.y < 0 && p.pos.y < t.se.y) {
+		if (p.vel.x > 0 && p.pos.X() > t.SE().X()) ||
+			(p.vel.x < 0 && p.pos.X() < t.NW().X()) ||
+			(p.vel.y < 0 && p.pos.Y() < t.SE().Y()) {
 			break
 		}
 	}
@@ -58,12 +52,11 @@ func findHighestY(t target, vel velocity) (highest int, hitTarget bool) {
 
 func Part1FromString(input string) int {
 	m := inputRE.FindStringSubmatch(input)
-	minX, maxX, minY, maxY := must.Atoi(m[1]), must.Atoi(m[2]), must.Atoi(m[3]), must.Atoi(m[4])
-	t := target{nw: coord{x: minX, y: maxY}, se: coord{x: maxX, y: minY}}
+	t := common.MakeRect(must.Atoi(m[1]), must.Atoi(m[2]), must.Atoi(m[3]), must.Atoi(m[4]))
 
 	highest := math.MinInt
-	for vx := -t.nw.x; vx <= t.se.x; vx++ {
-		for vy := minY; vy <= -minY; vy++ {
+	for vx := -t.NW().X(); vx <= t.SE().X(); vx++ {
+		for vy := t.SE().Y(); vy <= -t.SE().Y(); vy++ {
 			vel := velocity{x: vx, y: vy}
 			if height, hitTarget := findHighestY(t, vel); hitTarget {
 				highest = ints.Max(highest, height)
@@ -76,12 +69,11 @@ func Part1FromString(input string) int {
 
 func Part2FromString(input string) int {
 	m := inputRE.FindStringSubmatch(input)
-	minX, maxX, minY, maxY := must.Atoi(m[1]), must.Atoi(m[2]), must.Atoi(m[3]), must.Atoi(m[4])
-	t := target{nw: coord{x: minX, y: maxY}, se: coord{x: maxX, y: minY}}
+	t := common.MakeRect(must.Atoi(m[1]), must.Atoi(m[2]), must.Atoi(m[3]), must.Atoi(m[4]))
 
 	vels := 0
-	for vx := -t.nw.x; vx <= t.se.x; vx++ {
-		for vy := minY; vy <= -minY; vy++ {
+	for vx := -t.NW().X(); vx <= t.SE().X(); vx++ {
+		for vy := t.SE().Y(); vy <= -t.SE().Y(); vy++ {
 			vel := velocity{x: vx, y: vy}
 			if _, hitTarget := findHighestY(t, vel); hitTarget {
 				log.Printf("vel: %v", vel)
