@@ -188,6 +188,7 @@ func Part1(input string) int {
 
 	s := makeScanner(bin)
 	p := parse(s)
+
 	return versions(p)
 }
 
