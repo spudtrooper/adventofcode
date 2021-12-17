@@ -5,7 +5,7 @@ import (
 	"math"
 	"regexp"
 
-	"github.com/spudtrooper/adventofcode/common"
+	"github.com/spudtrooper/adventofcode/common/geom"
 	"github.com/spudtrooper/adventofcode/common/ints"
 	"github.com/spudtrooper/adventofcode/common/must"
 )
@@ -21,13 +21,13 @@ type velocity struct {
 
 type probe struct {
 	vel velocity
-	pos common.Point
+	pos geom.Point
 }
 
-type target common.Rect
+type target geom.Rect
 
 func findHighestY(t target, vel velocity) (highest int, hitTarget bool) {
-	p := probe{vel: vel, pos: common.MakePoint(0, 0)}
+	p := probe{vel: vel, pos: geom.MakePoint(0, 0)}
 	highest = math.MinInt
 	for {
 		if p.pos.Inside(t) {
@@ -52,7 +52,7 @@ func findHighestY(t target, vel velocity) (highest int, hitTarget bool) {
 
 func Part1FromString(input string) int {
 	m := inputRE.FindStringSubmatch(input)
-	t := common.MakeRect(must.Atoi(m[1]), must.Atoi(m[2]), must.Atoi(m[3]), must.Atoi(m[4]))
+	t := geom.MakeRect(must.Atoi(m[1]), must.Atoi(m[2]), must.Atoi(m[3]), must.Atoi(m[4]))
 
 	highest := math.MinInt
 	for vx := -t.NW().X(); vx <= t.SE().X(); vx++ {
@@ -69,7 +69,7 @@ func Part1FromString(input string) int {
 
 func Part2FromString(input string) int {
 	m := inputRE.FindStringSubmatch(input)
-	t := common.MakeRect(must.Atoi(m[1]), must.Atoi(m[2]), must.Atoi(m[3]), must.Atoi(m[4]))
+	t := geom.MakeRect(must.Atoi(m[1]), must.Atoi(m[2]), must.Atoi(m[3]), must.Atoi(m[4]))
 
 	vels := 0
 	for vx := -t.NW().X(); vx <= t.SE().X(); vx++ {

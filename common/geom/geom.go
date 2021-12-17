@@ -1,4 +1,4 @@
-package common
+package geom
 
 import "github.com/spudtrooper/adventofcode/common/ints"
 
