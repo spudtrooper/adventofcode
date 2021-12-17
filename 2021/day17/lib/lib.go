@@ -15,13 +15,11 @@ var (
 	inputRE = regexp.MustCompile(`target area: x=([\-\+]?\d+)\.\.([\-\+]?\d+), y=([\-\+]?\d+)\.\.([\-\+]?\d+)`)
 )
 
-type velocity struct {
-	x, y int
-}
-
+type velocity geom.Point
+type position geom.Point
 type probe struct {
 	vel velocity
-	pos geom.Point
+	pos position
 }
 
 type target geom.Rect
@@ -34,16 +32,17 @@ func findHighestY(t target, vel velocity) (highest int, hitTarget bool) {
 			hitTarget = true
 		}
 		highest = ints.Max(highest, p.pos.Y())
-		p.pos = p.pos.Move(p.vel.x, p.vel.y)
-		if p.vel.x > 0 {
-			p.vel.x--
-		} else if p.vel.x < 0 {
-			p.vel.x++
+		p.pos = p.pos.MoveBy(p.vel)
+		var dx int
+		if p.vel.X() > 0 {
+			dx = -1
+		} else if p.vel.X() < 0 {
+			dx = 1
 		}
-		p.vel.y--
-		if (p.vel.x > 0 && p.pos.X() > t.SE().X()) ||
-			(p.vel.x < 0 && p.pos.X() < t.NW().X()) ||
-			(p.vel.y < 0 && p.pos.Y() < t.SE().Y()) {
+		p.vel = p.vel.Move(dx, -1)
+		if (p.vel.X() > 0 && p.pos.X() > t.SE().X()) ||
+			(p.vel.X() < 0 && p.pos.X() < t.NW().X()) ||
+			(p.vel.Y() < 0 && p.pos.Y() < t.SE().Y()) {
 			break
 		}
 	}
@@ -57,7 +56,7 @@ func Part1FromString(input string) int {
 	highest := math.MinInt
 	for vx := -t.NW().X(); vx <= t.SE().X(); vx++ {
 		for vy := t.SE().Y(); vy <= -t.SE().Y(); vy++ {
-			vel := velocity{x: vx, y: vy}
+			vel := geom.MakePoint(vx, vy)
 			if height, hitTarget := findHighestY(t, vel); hitTarget {
 				highest = ints.Max(highest, height)
 			}
@@ -74,7 +73,7 @@ func Part2FromString(input string) int {
 	vels := 0
 	for vx := -t.NW().X(); vx <= t.SE().X(); vx++ {
 		for vy := t.SE().Y(); vy <= -t.SE().Y(); vy++ {
-			vel := velocity{x: vx, y: vy}
+			vel := geom.MakePoint(vx, vy)
 			if _, hitTarget := findHighestY(t, vel); hitTarget {
 				log.Printf("vel: %v", vel)
 				vels++
