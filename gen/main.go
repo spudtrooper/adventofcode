@@ -43,13 +43,18 @@ package lib
 
 import (
 	"log"
+	"strings"
 
 	"github.com/spudtrooper/adventofcode/common/must"
 )
 
 
 func Part1(input string) int {
-	for _, line := range must.ReadLines(input) {
+	return Part1FromString(must.ReadAllFile(input))
+}
+
+func Part1FromString(input string) int {
+	for _, line := range strings.Split(input, "\n") {
 		// TODO
 		if false {
 			log.Println(line)
@@ -59,7 +64,11 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
-	for _, line := range must.ReadLines(input) {
+	return Part2FromString(must.ReadAllFile(input))
+}
+
+func Part2FromString(input string) int {
+	for _, line := range strings.Split(input, "\n") {
 		// TODO
 		if false {
 			log.Println(line)
@@ -67,6 +76,7 @@ func Part2(input string) int {
 	}
 	return -1
 }
+
 `, struct {
 		Pkg string
 	}{
@@ -154,11 +164,18 @@ import (
 
 var (
 	input = flag.String("input", "{{.Year}}/{{.Pkg}}/lib/testdata/testinput.txt", "test input")
+	packet = flag.String("packet", "", "input packet")
 )
 
 func main() {
 	flag.Parse()
-	fmt.Printf("{{.Pkg}} Part{{.N}}: %d\n", {{.Pkg}}.Part{{.N}}(*input))
+	var val int
+	if *packet != "" {
+		val = {{.Pkg}}.Part{{.N}}FromString(*packet)
+	} else {
+		val = {{.Pkg}}.Part{{.N}}(*input)
+	}
+	fmt.Printf("{{.Pkg}} Part{{.N}}: %d\n", val)
 }`, struct {
 			Pkg  string
 			Year int
