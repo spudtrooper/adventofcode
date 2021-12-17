@@ -1,8 +1,11 @@
 package ints
 
 import (
+	"fmt"
 	"math"
+	"strings"
 
+	"github.com/spudtrooper/adventofcode/common/must"
 	"github.com/thomaso-mirodin/intmath/intgr"
 )
 
@@ -240,4 +243,43 @@ func (it *rangeBackedVec) Array() []int {
 		res = append(res, i)
 	}
 	return res
+}
+
+type Board [][]int
+
+func (b Board) Dims() (width int, height int) {
+	height, width = len(b), len(b[0])
+	return
+}
+
+func (b Board) String() string {
+	var lines []string
+	for _, row := range b {
+		var line []string
+		for _, c := range row {
+			line = append(line, fmt.Sprintf("%0d", c))
+		}
+		lines = append(lines, strings.Join(line, ""))
+	}
+	return strings.Join(lines, "\n")
+}
+
+func MakeBoard(width, height int) Board {
+	b := make([][]int, height)
+	for i := 0; i < height; i++ {
+		b[i] = make([]int, width)
+	}
+	return b
+}
+
+func ReadBoardFromFile(input string) Board {
+	return ReadBoardFromStrings(must.ReadLines(input))
+}
+
+func ReadBoardFromStrings(lines []string) Board {
+	var b Board
+	for _, line := range lines {
+		b = append(b, must.SplitInts(line, ""))
+	}
+	return b
 }

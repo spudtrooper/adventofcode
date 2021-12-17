@@ -1,43 +1,19 @@
 package lib
 
 import (
-	"fmt"
-	"strings"
-
+	"github.com/spudtrooper/adventofcode/common/ints"
 	"github.com/spudtrooper/adventofcode/common/must"
 
 	"github.com/flemeur/go-shortestpath/dijkstra"
 )
 
-type board [][]int
-
-func (b board) Dims() (width int, height int) {
-	height, width = len(b), len(b[0])
-	return
-}
-
-func (b board) String() string {
-	var lines []string
-	for _, row := range b {
-		var line []string
-		for _, c := range row {
-			line = append(line, fmt.Sprintf("%0d", c))
-		}
-		lines = append(lines, strings.Join(line, ""))
-	}
-	return strings.Join(lines, "\n")
-}
-
 func Part1(input string) int {
-	var b board
-	for _, line := range must.ReadLines(input) {
-		b = append(b, must.SplitInts(line, ""))
-	}
+	b := ints.ReadBoardFromFile(input)
 
 	return findShortestPath(b)
 }
 
-func findShortestPath(b board) int {
+func findShortestPath(b ints.Board) int {
 	width, height := b.Dims()
 
 	var vs [][]*vertex
@@ -89,7 +65,7 @@ type vertex struct {
 	edges []edge
 }
 
-func makeVertex(b board, x, y int) *vertex {
+func makeVertex(b ints.Board, x, y int) *vertex {
 	return &vertex{x: x, y: y}
 }
 
@@ -116,14 +92,11 @@ func (e edge) Weight() float64 {
 }
 
 func Part2(input string) int {
-	var b board
-	for _, line := range must.ReadLines(input) {
-		b = append(b, must.SplitInts(line, ""))
-	}
+	b := ints.ReadBoardFromFile(input)
 
 	width, height := b.Dims()
 
-	fullBoard := board{}
+	fullBoard := ints.Board{}
 	for i := 0; i < 5*height; i++ {
 		fullBoard = append(fullBoard, make([]int, width*5))
 	}

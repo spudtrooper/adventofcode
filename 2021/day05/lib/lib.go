@@ -1,8 +1,10 @@
 package day05
 
 import (
+	"log"
 	"regexp"
 
+	"github.com/spudtrooper/adventofcode/common/ints"
 	"github.com/spudtrooper/adventofcode/common/must"
 	"github.com/thomaso-mirodin/intmath/intgr"
 )
@@ -25,13 +27,15 @@ func readConfig(input string) []line {
 }
 
 func Part1(input string) int {
-	f := [1000][1000]int{}
+	f := ints.MakeBoard(1000, 1000)
 	for _, line := range readConfig(input) {
 		if line.x1 != line.x2 && line.y1 != line.y2 {
 			continue
 		}
 		for y := intgr.Min(line.y1, line.y2); y <= intgr.Max(line.y1, line.y2); y++ {
 			for x := intgr.Min(line.x1, line.x2); x <= intgr.Max(line.x1, line.x2); x++ {
+				log.Printf("height: %d", len(f))
+				log.Printf("width: %d", len(f[0]))
 				f[y][x]++
 			}
 		}
@@ -59,7 +63,7 @@ func Part2(input string) int {
 		return 1
 	}
 
-	f := [1000][1000]int{}
+	f := ints.MakeBoard(1000, 1000)
 	for _, line := range readConfig(input) {
 		for x, y := line.x1, line.y1; ; {
 			f[y][x]++
