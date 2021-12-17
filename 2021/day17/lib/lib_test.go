@@ -37,13 +37,13 @@ func TestPart2(t *testing.T) {
 		{
 			name:  "testinput",
 			input: "testdata/testinput.txt",
-			want:  -1, // TODO
+			want:  112,
 		},
-		// {
-		// 	name:  "part2",
-		//	input: "testdata/input.txt",
-		//	want:  -1, // TODO
-		// },
+		{
+			name:  "part2",
+			input: "testdata/input.txt",
+			want:  1733,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

@@ -4,7 +4,6 @@ import (
 	"log"
 	"math"
 	"regexp"
-	"strings"
 
 	"github.com/spudtrooper/adventofcode/common/ints"
 	"github.com/spudtrooper/adventofcode/common/must"
@@ -76,13 +75,22 @@ func Part1FromString(input string) int {
 }
 
 func Part2FromString(input string) int {
-	for _, line := range strings.Split(input, "\n") {
-		// TODO
-		if false {
-			log.Println(line)
+	m := inputRE.FindStringSubmatch(input)
+	minX, maxX, minY, maxY := must.Atoi(m[1]), must.Atoi(m[2]), must.Atoi(m[3]), must.Atoi(m[4])
+	t := target{nw: coord{x: minX, y: maxY}, se: coord{x: maxX, y: minY}}
+
+	vels := 0
+	for vx := -t.nw.x; vx <= t.se.x; vx++ {
+		for vy := minY; vy <= -minY; vy++ {
+			vel := velocity{x: vx, y: vy}
+			if _, hitTarget := findHighestY(t, vel); hitTarget {
+				log.Printf("vel: %v", vel)
+				vels++
+			}
 		}
 	}
-	return -1
+
+	return vels
 }
 
 func Part1(input string) int {
