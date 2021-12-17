@@ -62,8 +62,8 @@ func Part1FromString(input string) int {
 	t := target{nw: coord{x: minX, y: maxY}, se: coord{x: maxX, y: minY}}
 
 	highest := math.MinInt
-	for vx := 1; vx < t.se.x; vx++ {
-		for vy := 1; vy < -minY; vy++ {
+	for vx := -t.nw.x; vx <= t.se.x; vx++ {
+		for vy := minY; vy <= -minY; vy++ {
 			vel := velocity{x: vx, y: vy}
 			if height, hitTarget := findHighestY(t, vel); hitTarget {
 				highest = ints.Max(highest, height)
