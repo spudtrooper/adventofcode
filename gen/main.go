@@ -49,10 +49,6 @@ import (
 )
 
 
-func Part1(input string) int {
-	return Part1FromString(must.ReadAllFile(input))
-}
-
 func Part1FromString(input string) int {
 	for _, line := range strings.Split(input, "\n") {
 		// TODO
@@ -63,10 +59,6 @@ func Part1FromString(input string) int {
 	return -1
 }
 
-func Part2(input string) int {
-	return Part2FromString(must.ReadAllFile(input))
-}
-
 func Part2FromString(input string) int {
 	for _, line := range strings.Split(input, "\n") {
 		// TODO
@@ -75,6 +67,14 @@ func Part2FromString(input string) int {
 		}
 	}
 	return -1
+}
+
+func Part1(input string) int {
+	return Part1FromString(must.ReadAllFile(input))
+}
+
+func Part2(input string) int {
+	return Part2FromString(must.ReadAllFile(input))
 }
 
 `, struct {
