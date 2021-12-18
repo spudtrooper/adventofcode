@@ -43,36 +43,31 @@ func (n *node) ToList() nodes {
 	return []*node{n}
 }
 
-// [[[[[9,8],1],2],3],4]
 func parseNode(s common.Scanner, tab string) *node {
-	if ch := s.Peek(); ch == "[" {
-		s.Next(1)
-		a := parseNode(s, tab+" ")
+	ch := s.Next(1)
+	if ch == "[" {
+		l := parseNode(s, tab+" ")
 		if ch := s.Next(1); ch != "," {
 			log.Fatalf(`expecting  "," instead found %s`, ch)
 		}
-		b := parseNode(s, tab+" ")
+		r := parseNode(s, tab+" ")
 		if ch := s.Next(1); ch != "]" {
 			log.Fatalf(`expecting  "]" instead found %s`, ch)
 		}
-		return &node{l: a, r: b}
+		return &node{l: l, r: r}
 	}
-	n := s.Next(1)
-	for {
-		if !isDigit(s.Peek()) {
-			break
+	n := ch
+	isDigit := func(s string) bool {
+		if _, err := strconv.Atoi(s); err == nil {
+			return true
 		}
+		return false
+	}
+	for isDigit(s.Peek()) {
 		n += s.Next(1)
 	}
 	num := must.Atoi(n)
 	return &node{num: num}
-}
-
-func isDigit(s string) bool {
-	if _, err := strconv.Atoi(s); err == nil {
-		return true
-	}
-	return false
 }
 
 func Parse(input string) *node {
@@ -85,7 +80,6 @@ func add(a, b *node) *node {
 }
 
 func findNodeToExplode(n *node, depth int) *node {
-	// log.Printf("findNodeToExplode: node:%v depth:%d", n, depth)
 	if depth >= 4 && n.l != nil && n.l.l == nil && n.r != nil && n.r.l == nil {
 		return n
 	}
@@ -102,33 +96,29 @@ func findNodeToExplode(n *node, depth int) *node {
 	return nil
 }
 
-func explode(n *node) bool {
-	if ex := findNodeToExplode(n, 0); ex != nil {
-		ns := n.ToList()
-		li, ri := ns.IndexOf(ex.l), ns.IndexOf(ex.r)
-		if li > 0 {
-			ns[li-1].num += ex.l.num
+func explode(in *node) bool {
+	if ex := findNodeToExplode(in, 0); ex != nil {
+		ns := in.ToList()
+		if i := ns.IndexOf(ex.l); i > 0 {
+			ns[i-1].num += ex.l.num
 		}
-		if ri < len(ns)-1 {
-			ns[ri+1].num += ex.r.num
+		if i := ns.IndexOf(ex.r); i < len(ns)-1 {
+			ns[i+1].num += ex.r.num
 		}
-		ex.l = nil
-		ex.r = nil
-		ex.num = 0
+		*ex = node{}
 		return true
 	}
 	return false
 }
 
-func split(n *node) bool {
-	for _, s := range n.ToList() {
-		if s.num >= 10 {
-			l, r := s.num/2, s.num/2+s.num%2
-			s.l = &node{num: l}
-			s.r = &node{num: r}
-			s.num = 0
-			return true
+func split(in *node) bool {
+	for _, n := range in.ToList() {
+		if n.num < 10 {
+			continue
 		}
+		l, r := n.num/2, n.num/2+n.num%2
+		*n = node{l: &node{num: l}, r: &node{num: r}}
+		return true
 	}
 	return false
 }
@@ -136,32 +126,26 @@ func split(n *node) bool {
 func Reduce(n *node) *node {
 	log.Printf("reduce          : %v", n)
 	for {
-		if !reduce(n) {
-			break
+		if explode(n) {
+			log.Printf("after explode   : %v", n)
+			continue
 		}
+		if split(n) {
+			log.Printf("after split     : %v", n)
+			continue
+		}
+		break
 	}
 	return n
 }
 
-func reduce(n *node) bool {
-	if explode(n) {
-		log.Printf("after explode   : %v", n)
-		return true
-	}
-	if split(n) {
-		log.Printf("after split     : %v", n)
-		return true
-	}
-	return false
-}
-
 func Magnitude(n *node) int {
-	return magnitude(n)
+	return mag(n)
 }
 
-func magnitude(n *node) int {
+func mag(n *node) int {
 	if n.l != nil {
-		return 3*magnitude(n.l) + 2*magnitude(n.r)
+		return 3*mag(n.l) + 2*mag(n.r)
 	}
 	return n.num
 }
@@ -174,8 +158,6 @@ func Part1FromString(input string) int {
 		n := add(l, r)
 		l = Reduce(n)
 	}
-
-	log.Printf("result: %v", l)
 
 	return Magnitude(l)
 }
