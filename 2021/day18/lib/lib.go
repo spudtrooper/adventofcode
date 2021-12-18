@@ -36,7 +36,7 @@ func (ns nodes) IndexOf(n *node) int {
 
 func (n *node) ToList() nodes {
 	if n.l != nil {
-		var res []*node
+		var res nodes
 		res = append(res, n.l.ToList()...)
 		res = append(res, n.r.ToList()...)
 		return res
@@ -135,10 +135,9 @@ func split(in *node) bool {
 
 func Reduce(n *node) *node {
 	for {
-		if explode(n) || split(n) {
-			continue
+		if !explode(n) && !split(n) {
+			break
 		}
-		break
 	}
 	return n
 }
@@ -149,7 +148,7 @@ func Magnitude(n *node) int {
 
 func mag(n *node) int {
 	if n.l != nil {
-		return 3*mag(n.l) + 2*mag(n.r)
+		return 3*Magnitude(n.l) + 2*mag(n.r)
 	}
 	return n.num
 }
@@ -162,7 +161,6 @@ func Part1FromString(input string) int {
 		n := Add(l, r)
 		l = Reduce(n)
 	}
-
 	return Magnitude(l)
 }
 
