@@ -3,7 +3,6 @@ package lib
 import (
 	"fmt"
 	"log"
-	"math"
 	"strconv"
 	"strings"
 
@@ -166,7 +165,7 @@ func Part1FromString(input string) int {
 
 func Part2FromString(input string) int {
 	lines := strings.Split(input, "\n")
-	max := math.MinInt
+	var max int
 	for i, ls := range lines {
 		for j, rs := range lines {
 			if i == j {
