@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/spudtrooper/adventofcode/common"
 	"github.com/spudtrooper/adventofcode/common/must"
 )
 
@@ -17,28 +18,7 @@ var (
 	}
 )
 
-// https://www.educative.io/edpresso/how-to-implement-a-stack-in-golang
-type stack []string
-
-func (s *stack) Empty() bool {
-	return len(*s) == 0
-}
-
-func (s *stack) Push(str string) {
-	*s = append(*s, str)
-}
-
-func (s *stack) Pop() string {
-	if s.Empty() {
-		return ""
-	}
-	index := len(*s) - 1
-	element := (*s)[index]
-	*s = (*s)[:index]
-	return element
-}
-
-type stackFinder struct{ stack }
+type stackFinder struct{ common.Stack }
 
 func (s *stackFinder) FirstIllegalChar(chunk string) string {
 	for i, c := range strings.Split(chunk, "") {
@@ -66,7 +46,7 @@ func Part1(input string) int {
 	}
 	var score int
 	for _, line := range must.ReadLines(input) {
-		var s stackFinder
+		s := &stackFinder{common.MakeStack()}
 		if c := s.FirstIllegalChar(line); c != "" {
 			score += points[c]
 		}
@@ -83,7 +63,7 @@ func Part2(input string) int {
 	}
 	var scores []int
 	for _, line := range must.ReadLines(input) {
-		var s stackFinder
+		s := &stackFinder{common.MakeStack()}
 		if c := s.FirstIllegalChar(line); c == "" {
 			var score int
 			for {

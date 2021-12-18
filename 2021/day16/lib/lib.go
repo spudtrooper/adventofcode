@@ -1,9 +1,9 @@
 package lib
 
 import (
-	"log"
 	"math"
 
+	"github.com/spudtrooper/adventofcode/common"
 	"github.com/spudtrooper/adventofcode/common/ints"
 	"github.com/spudtrooper/adventofcode/common/must"
 )
@@ -28,26 +28,6 @@ var (
 		"F": "1111",
 	}
 )
-
-type scanner struct {
-	input string
-	cur   int
-}
-
-func makeScanner(s string) *scanner {
-	return &scanner{input: s}
-}
-
-func (s *scanner) next(n int) string {
-	res := s.input[s.cur : s.cur+n]
-	s.cur += n
-	log.Printf("after next(%d)=%s", n, res)
-	return res
-}
-
-func (s *scanner) hasMore() bool {
-	return s.cur < len(s.input)
-}
 
 type packet struct {
 	version int
@@ -79,13 +59,13 @@ func versions(p packet) int {
 	return res
 }
 
-func parse(s *scanner) packet {
-	version := parseInt(s.next(3))
-	id := parseInt(s.next(3))
+func parse(s common.Scanner) packet {
+	version := parseInt(s.Next(3))
+	id := parseInt(s.Next(3))
 
 	if id == 4 {
-		for num := ""; s.hasMore(); {
-			next := s.next(5)
+		for num := ""; s.HasMore(); {
+			next := s.Next(5)
 			fst, lst := next[0:1], next[1:]
 			num += lst
 			if fst == "0" {
@@ -99,14 +79,14 @@ func parse(s *scanner) packet {
 	}
 
 	ps := []packet{}
-	if i := parseInt(s.next(1)); i == 0 {
-		l := parseInt(s.next(15))
-		rest := s.next(l)
-		for sub := makeScanner(rest); sub.hasMore(); {
+	if i := parseInt(s.Next(1)); i == 0 {
+		l := parseInt(s.Next(15))
+		rest := s.Next(l)
+		for sub := common.MakeScanner(rest); sub.HasMore(); {
 			ps = append(ps, parse(sub))
 		}
 	} else {
-		l := parseInt(s.next(11))
+		l := parseInt(s.Next(11))
 		for i := 0; i < l; i++ {
 			p := parse(s)
 			ps = append(ps, p)
@@ -186,7 +166,7 @@ func Part1(input string) int {
 		bin += h2b[string(r)]
 	}
 
-	s := makeScanner(bin)
+	s := common.MakeScanner(bin)
 	p := parse(s)
 
 	return versions(p)
@@ -203,7 +183,7 @@ func Part2FromString(packet string) int {
 		bin += h2b[string(r)]
 	}
 
-	s := makeScanner(bin)
+	s := common.MakeScanner(bin)
 	p := parse(s)
 
 	return value(p)
