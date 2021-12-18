@@ -3,11 +3,13 @@ package lib
 import (
 	"fmt"
 	"log"
+	"math"
 	"strconv"
 	"strings"
 
 	"github.com/spudtrooper/adventofcode/common"
 	"github.com/spudtrooper/adventofcode/common/must"
+	"github.com/thomaso-mirodin/intmath/intgr"
 )
 
 type node struct {
@@ -75,6 +77,10 @@ func Parse(input string) *node {
 	return parseNode(s, " ")
 }
 
+func Add(a, b *node) *node {
+	return add(a, b)
+}
+
 func add(a, b *node) *node {
 	return &node{l: a, r: b}
 }
@@ -94,6 +100,11 @@ func findNodeToExplode(n *node, depth int) *node {
 		}
 	}
 	return nil
+}
+
+func Explode(n *node) *node {
+	explode(n)
+	return n
 }
 
 func explode(in *node) bool {
@@ -124,14 +135,11 @@ func split(in *node) bool {
 }
 
 func Reduce(n *node) *node {
-	log.Printf("reduce          : %v", n)
 	for {
 		if explode(n) {
-			log.Printf("after explode   : %v", n)
 			continue
 		}
 		if split(n) {
-			log.Printf("after split     : %v", n)
 			continue
 		}
 		break
@@ -155,7 +163,7 @@ func Part1FromString(input string) int {
 	l := Parse(lines[0])
 	for i := 1; i < len(lines); i++ {
 		r := Parse(lines[i])
-		n := add(l, r)
+		n := Add(l, r)
 		l = Reduce(n)
 	}
 
@@ -163,13 +171,28 @@ func Part1FromString(input string) int {
 }
 
 func Part2FromString(input string) int {
-	for _, line := range strings.Split(input, "\n") {
-		// TODO
-		if false {
-			log.Println(line)
+	lines := strings.Split(input, "\n")
+	max := math.MinInt
+	for i, a := range lines {
+		for j, b := range lines {
+			if i == j {
+				// continue
+			}
+			l, r := Parse(a), Parse(b)
+			n := Add(l, r)
+			red := Reduce(n)
+			m := Magnitude(red)
+			if m >= max {
+				log.Println()
+				log.Printf("left: %v", l)
+				log.Printf("right: %v", r)
+				log.Printf("red: %v", red)
+				log.Printf("max: %v", m)
+			}
+			max = intgr.Max(max, m)
 		}
 	}
-	return -1
+	return max
 }
 
 func Part1(input string) int {

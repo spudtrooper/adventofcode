@@ -14,6 +14,11 @@ func TestPart1(t *testing.T) {
 			want:  3488,
 		},
 		{
+			name:  "testinput2",
+			input: "testdata/testinput2.txt",
+			want:  4140,
+		},
+		{
 			name:  "part1",
 			input: "testdata/input.txt",
 			want:  4433,
@@ -28,9 +33,30 @@ func TestPart1(t *testing.T) {
 	}
 }
 
-func Explode(n *node) *node {
-	explode(n)
-	return n
+func TestPart2(t *testing.T) {
+	testCases := []struct {
+		name  string
+		input string
+		want  int
+	}{
+		{
+			name:  "testinput2",
+			input: "testdata/testinput2.txt",
+			want:  3993,
+		},
+		{
+			name:  "part2",
+			input: "testdata/input.txt",
+			want:  4559,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if want, got := tc.want, Part2(tc.input); want != got {
+				t.Errorf("day18 Part2: want(%d) != got(%d)", want, got)
+			}
+		})
+	}
 }
 
 func TestPart1Explode(t *testing.T) {
@@ -112,32 +138,6 @@ func TestPart1Magnitude(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			if want, got := tc.want, Magnitude(Parse(tc.input)); want != got {
 				t.Errorf("day18 Magnitude: want(%d) != got(%d)", want, got)
-			}
-		})
-	}
-}
-
-func TestPart2(t *testing.T) {
-	testCases := []struct {
-		name  string
-		input string
-		want  int
-	}{
-		{
-			name:  "testinput",
-			input: "testdata/testinput.txt",
-			want:  -1, // TODO
-		},
-		// {
-		// 	name:  "part2",
-		//	input: "testdata/input.txt",
-		//	want:  -1, // TODO
-		// },
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			if want, got := tc.want, Part2(tc.input); want != got {
-				t.Errorf("day18 Part2: want(%d) != got(%d)", want, got)
 			}
 		})
 	}
