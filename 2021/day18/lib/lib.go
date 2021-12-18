@@ -9,7 +9,6 @@ import (
 
 	"github.com/spudtrooper/adventofcode/common"
 	"github.com/spudtrooper/adventofcode/common/must"
-	"github.com/thomaso-mirodin/intmath/intgr"
 )
 
 type node struct {
@@ -170,23 +169,17 @@ func Part1FromString(input string) int {
 func Part2FromString(input string) int {
 	lines := strings.Split(input, "\n")
 	max := math.MinInt
-	for i, a := range lines {
-		for j, b := range lines {
+	for i, ls := range lines {
+		for j, rs := range lines {
 			if i == j {
-				// continue
+				continue
 			}
-			l, r := Parse(a), Parse(b)
+			l, r := Parse(ls), Parse(rs)
 			n := Add(l, r)
 			red := Reduce(n)
-			m := Magnitude(red)
-			if m >= max {
-				log.Println()
-				log.Printf("left: %v", l)
-				log.Printf("right: %v", r)
-				log.Printf("red: %v", red)
-				log.Printf("max: %v", m)
+			if m := Magnitude(red); m > max {
+				max = m
 			}
-			max = intgr.Max(max, m)
 		}
 	}
 	return max
