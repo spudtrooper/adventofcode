@@ -136,10 +136,7 @@ func split(in *node) bool {
 
 func Reduce(n *node) *node {
 	for {
-		if explode(n) {
-			continue
-		}
-		if split(n) {
+		if explode(n) || split(n) {
 			continue
 		}
 		break
