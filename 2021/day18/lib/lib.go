@@ -63,7 +63,7 @@ func parseNode(s common.Scanner, tab string) *node {
 		}
 		return false
 	}
-	for isDigit(s.Peek()) {
+	for isDigit(s.Peek(1)) {
 		n += s.Next(1)
 	}
 	num := must.Atoi(n)

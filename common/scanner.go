@@ -4,7 +4,7 @@ import "github.com/fatih/color"
 
 type Scanner interface {
 	Next(int) string
-	Peek() string
+	Peek(int) string
 	DebugString() string
 	HasMore() bool
 }
@@ -19,13 +19,21 @@ func MakeScanner(s string) *scanner {
 }
 
 func (s *scanner) Next(n int) string {
-	res := s.input[s.cur : s.cur+n]
+	res := s.peek(n)
 	s.cur += n
 	return res
 }
 
-func (s *scanner) Peek() string {
-	return s.input[s.cur : s.cur+1]
+func (s *scanner) Peek(n int) string {
+	return s.peek(n)
+}
+
+func (s *scanner) peek(n int) string {
+	end := s.cur + n
+	if end > len(s.input) {
+		end = len(s.input)
+	}
+	return s.input[s.cur:end]
 }
 
 func (s *scanner) Pos() int {
