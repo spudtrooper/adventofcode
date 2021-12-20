@@ -9,7 +9,9 @@ import (
 	"github.com/spudtrooper/adventofcode/common/must"
 )
 
-func readBoard(inputLines []string, pad int) common.StringBoard {
+type board common.StringBoard
+
+func readBoard(inputLines []string, pad int) board {
 	var paddedLines []string
 	width := len(inputLines)
 	newWidth := width + 2*pad
