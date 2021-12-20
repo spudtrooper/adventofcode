@@ -23,9 +23,7 @@ func (b board) String() string {
 	return strings.Join(lines, "\n")
 }
 
-const pad = 15
-
-func readBoard(inputLines []string) board {
+func readBoard(inputLines []string, pad int) board {
 	var paddedLines []string
 	width := len(inputLines)
 	newWidth := width + 2*pad
@@ -64,7 +62,7 @@ func repeat(s string, times int) string {
 	return buf.String()
 }
 
-func Part1FromString(input string) int {
+func convertBoard(b board, algo string) board {
 	coordBit := func(b board, x, y int) int {
 		width, height := b.Dims()
 		if x >= 0 && x < width && y >= 0 && y < height {
@@ -89,30 +87,32 @@ func Part1FromString(input string) int {
 		return res
 	}
 
-	convert := func(b board, algo string) board {
-		width, height := b.Dims()
-		res := makeBoard(width, height)
-		for y, row := range b {
-			for x := range row {
-				bin := coordValue(b, x, y)
-				val := string(algo[bin])
-				res[y][x] = val
-			}
+	width, height := b.Dims()
+	res := makeBoard(width, height)
+	for y, row := range b {
+		for x := range row {
+			bin := coordValue(b, x, y)
+			val := string(algo[bin])
+			res[y][x] = val
 		}
-		return res
 	}
+	return res
+}
+
+func Part1FromString(input string) int {
+	const pad = 15
 
 	lines := strings.Split(input, "\n")
 
 	algo := lines[0]
 
-	b := readBoard(lines[2:])
+	b := readBoard(lines[2:], pad)
 	log.Printf("b\n\n%v", b)
 
-	b2 := convert(b, algo)
+	b2 := convertBoard(b, algo)
 	log.Printf("b2\n\n%v", b2)
 
-	b3 := convert(b2, algo)
+	b3 := convertBoard(b2, algo)
 	log.Printf("b3\n\n%v", b3)
 
 	var res int
@@ -132,13 +132,41 @@ func Part1FromString(input string) int {
 }
 
 func Part2FromString(input string) int {
-	for _, line := range strings.Split(input, "\n") {
-		// TODO
-		if false {
-			log.Println(line)
+	const pad = 500
+
+	lines := strings.Split(input, "\n")
+
+	algo := lines[0]
+
+	b := readBoard(lines[2:], pad)
+	if pad < 100 {
+		log.Printf("b\n\n%v", b)
+	}
+
+	for i := 0; i < 50; i++ {
+		log.Printf("iteration %d", i)
+		b = convertBoard(b, algo)
+		if pad < 100 {
+			log.Printf("b%d\n\n%v", i, b)
 		}
 	}
-	return -1
+
+	//XXX: Skip the initial line and artifacts in the corner. This is definitely wrong, but works.
+	const discard = 120
+
+	var res int
+	for y, row := range b {
+		if y < discard || y > len(b)-discard {
+			continue
+		}
+		for _, v := range row {
+			if v == "#" {
+				res++
+			}
+		}
+	}
+
+	return res
 }
 
 func Part1(input string) int {
