@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"bytes"
 	"log"
 	"strings"
 
@@ -16,28 +15,20 @@ func readBoard(inputLines []string, pad int) board {
 	width := len(inputLines)
 	newWidth := width + 2*pad
 	for i := 0; i < pad; i++ {
-		paddedLine := repeat(".", newWidth)
+		paddedLine := common.Repeat(".", newWidth)
 		paddedLines = append(paddedLines, paddedLine)
 	}
 	for _, line := range inputLines {
-		paddedLine := repeat(".", pad) + line + repeat(".", pad)
+		paddedLine := common.Repeat(".", pad) + line + common.Repeat(".", pad)
 		paddedLines = append(paddedLines, paddedLine)
 	}
 	for i := 0; i < pad; i++ {
-		paddedLine := repeat(".", newWidth)
+		paddedLine := common.Repeat(".", newWidth)
 		paddedLines = append(paddedLines, paddedLine)
 	}
 	return common.MakeStringBoard(newWidth, len(paddedLines), func(y, x int) string {
 		return string(paddedLines[y][x])
 	})
-}
-
-func repeat(s string, times int) string {
-	var buf bytes.Buffer
-	for i := 0; i < times; i++ {
-		buf.WriteString(s)
-	}
-	return buf.String()
 }
 
 func convertBoard(b common.StringBoard, algo string) common.StringBoard {
