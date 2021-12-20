@@ -21,6 +21,13 @@ func MakeStringBoard(width, height int, char func(y, x int) string) StringBoard 
 	}
 	return b
 }
+
+func StringBoardIdentFn(s string) func(y, x int) string {
+	return func(y, x int) string {
+		return s
+	}
+}
+
 func (b stringBoard) Traverse(f func(y, x int, s string)) {
 	for y, row := range b {
 		for x, s := range row {

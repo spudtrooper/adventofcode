@@ -57,9 +57,7 @@ func convertBoard(b common.StringBoard, algo string) common.StringBoard {
 	}
 
 	width, height := b.Dims()
-	res := common.MakeStringBoard(width, height, func(y, x int) string {
-		return "."
-	})
+	res := common.MakeStringBoard(width, height, common.StringBoardIdentFn("."))
 	b.Traverse(func(y, x int, v string) {
 		bin := coordValue(b, x, y)
 		val := string(algo[bin])
