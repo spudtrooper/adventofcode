@@ -70,7 +70,7 @@ func TestPointInside(t *testing.T) {
 	}
 }
 
-func TestMove(t *testing.T) {
+func TestPointMove(t *testing.T) {
 	testCases := []struct {
 		name   string
 		point  Point
@@ -150,7 +150,7 @@ func TestMove(t *testing.T) {
 	}
 }
 
-func TestMoveBy(t *testing.T) {
+func TestPointMoveBy(t *testing.T) {
 	testCases := []struct {
 		name  string
 		point Point
