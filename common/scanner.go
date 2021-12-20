@@ -1,6 +1,8 @@
 package common
 
-import "github.com/fatih/color"
+import (
+	"github.com/fatih/color"
+)
 
 type Scanner interface {
 	Next(int) string
