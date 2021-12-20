@@ -5,25 +5,11 @@ import (
 	"log"
 	"strings"
 
+	"github.com/spudtrooper/adventofcode/common"
 	"github.com/spudtrooper/adventofcode/common/must"
 )
 
-type board [][]string
-
-func (b board) Dims() (width int, height int) {
-	height, width = len(b), len(b[0])
-	return
-}
-
-func (b board) String() string {
-	var lines []string
-	for _, row := range b {
-		lines = append(lines, strings.Join(row, ""))
-	}
-	return strings.Join(lines, "\n")
-}
-
-func readBoard(inputLines []string, pad int) board {
+func readBoard(inputLines []string, pad int) common.StringBoard {
 	var paddedLines []string
 	width := len(inputLines)
 	newWidth := width + 2*pad
@@ -39,19 +25,9 @@ func readBoard(inputLines []string, pad int) board {
 		paddedLine := repeat(".", newWidth)
 		paddedLines = append(paddedLines, paddedLine)
 	}
-	var b board
-	for _, line := range paddedLines {
-		b = append(b, strings.Split(line, ""))
-	}
-	return b
-}
-
-func makeBoard(width, height int) board {
-	var b board
-	for y := 0; y < height; y++ {
-		b = append(b, strings.Split(repeat(".", width), ""))
-	}
-	return b
+	return common.MakeStringBoard(newWidth, len(paddedLines), func(y, x int) string {
+		return string(paddedLines[y][x])
+	})
 }
 
 func repeat(s string, times int) string {
@@ -62,18 +38,18 @@ func repeat(s string, times int) string {
 	return buf.String()
 }
 
-func convertBoard(b board, algo string) board {
-	coordBit := func(b board, x, y int) int {
+func convertBoard(b common.StringBoard, algo string) common.StringBoard {
+	coordBit := func(b common.StringBoard, x, y int) int {
 		width, height := b.Dims()
 		if x >= 0 && x < width && y >= 0 && y < height {
-			if v := b[y][x]; v == "#" {
+			if v := b.Get(y, x); v == "#" {
 				return 1
 			}
 		}
 		return 0
 	}
 
-	coordValue := func(b board, x, y int) int {
+	coordValue := func(b common.StringBoard, x, y int) int {
 		var res int
 		res = res | (coordBit(b, x-1, y-1) << 8)
 		res = res | (coordBit(b, x+0, y-1) << 7)
@@ -88,14 +64,14 @@ func convertBoard(b board, algo string) board {
 	}
 
 	width, height := b.Dims()
-	res := makeBoard(width, height)
-	for y, row := range b {
-		for x := range row {
-			bin := coordValue(b, x, y)
-			val := string(algo[bin])
-			res[y][x] = val
-		}
-	}
+	res := common.MakeStringBoard(width, height, func(y, x int) string {
+		return "."
+	})
+	b.Traverse(func(y, x int, v string) {
+		bin := coordValue(b, x, y)
+		val := string(algo[bin])
+		res.Set(y, x, val)
+	})
 	return res
 }
 
@@ -116,17 +92,16 @@ func Part1FromString(input string) int {
 	log.Printf("b3\n\n%v", b3)
 
 	var res int
-	for y, row := range b3 {
+	_, h := b3.Dims()
+	b3.Traverse(func(y, x int, s string) {
 		//XXX: Skip the initial line and artifacts in the corner. This is definitely wrong, but works.
-		if y == 0 || y == len(b3)-1 {
-			continue
+		if y == 0 || y == h-1 {
+			return
 		}
-		for _, v := range row {
-			if v == "#" {
-				res++
-			}
+		if s == "#" {
+			res++
 		}
-	}
+	})
 
 	return res
 }
@@ -151,20 +126,19 @@ func Part2FromString(input string) int {
 		}
 	}
 
-	//XXX: Skip the initial line and artifacts in the corner. This is definitely wrong, but works.
 	const discard = 120
 
 	var res int
-	for y, row := range b {
-		if y < discard || y > len(b)-discard {
-			continue
+	_, h := b.Dims()
+	b.Traverse(func(y, x int, s string) {
+		//XXX: Skip the initial line and artifacts in the corner. This is definitely wrong, but works.
+		if y < discard || y > h-discard {
+			return
 		}
-		for _, v := range row {
-			if v == "#" {
-				res++
-			}
+		if s == "#" {
+			res++
 		}
-	}
+	})
 
 	return res
 }
