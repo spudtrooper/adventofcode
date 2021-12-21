@@ -71,26 +71,6 @@ func Part1FromString(input string) int {
 	}
 }
 
-type diracDie struct {
-	val int
-}
-
-func (d *diracDie) next() int {
-	res := d.val
-	d.val++
-	if d.val == 4 {
-		d.val = 1
-	}
-	return res
-}
-
-func (d *diracDie) roll(p *player) {
-	r1, r2, r3 := d.next()%100, d.next()%100, d.next()%100
-	p.pos = (p.pos + r1 + r2 + r3) % 100
-	p.score += p.pos + 1
-	log.Printf("Player %d rolls %d+%d+%d and moves to space %d for a total score of %d", p.id, r1, r2, r3, p.pos, p.score)
-}
-
 func Part2FromString(input string) int {
 	lines := strings.Split(input, "\n")
 	var p1, p2 player
@@ -123,6 +103,7 @@ func Part2FromString(input string) int {
 		9: 1,
 	}
 
+	// TODO: Learn to map from objects correctly
 	states := map[string]state{}
 	counts := map[string]int{}
 	initState := state{
