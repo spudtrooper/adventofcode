@@ -19,3 +19,6 @@ func (p *point3d) Move(dx, dy, dz int) Point3D {
 func (p *point3d) MoveBy(o Point3D) Point3D {
 	return p.Move(o.X(), o.Y(), o.Z())
 }
+
+func (p *point3d) String() string        { return Point3DString(p) }
+func (p *point3d) Equals(o Point3D) bool { return Point3DEquals(p, o) }

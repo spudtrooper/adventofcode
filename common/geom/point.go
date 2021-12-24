@@ -25,3 +25,7 @@ func (p *point) Move(dx, dy int) Point {
 func (p *point) MoveBy(o Point) Point {
 	return p.Move(o.X(), o.Y())
 }
+
+func (p *point) String() string { return PointString(p) }
+
+func (p *point) Equals(o Point) bool { return PointEquals(p, o) }

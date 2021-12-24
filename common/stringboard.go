@@ -1,12 +1,25 @@
 package common
 
-import "strings"
+import (
+	"strings"
+)
 
 type StringBoard interface {
 	Dims() (width int, height int)
 	Get(y, x int) string
 	Set(y, x int, s string)
 	Traverse(func(y, x int, s string))
+	VisitNeighbors(x, y int, f func(x, y int, s string))
+	Clone() StringBoard
+	String() string
+}
+
+func ParseStringBoard(input string) StringBoard {
+	var b stringBoard
+	for _, line := range strings.Split(input, "\n") {
+		b = append(b, strings.Split(line, ""))
+	}
+	return b
 }
 
 func MakeStringBoard(width, height int, char func(y, x int) string) StringBoard {
@@ -36,6 +49,24 @@ func (b stringBoard) Traverse(f func(y, x int, s string)) {
 	}
 }
 
+func (b stringBoard) VisitNeighbors(x, y int, f func(x, y int, s string)) {
+	w, h := b.Dims()
+	try := func(x, y int) {
+		if x < 0 || x >= w || y < 0 || y >= h {
+			return
+		}
+		f(x, y, b[y][x])
+	}
+	try(x, y-1)
+	// try(x+1, y-1)
+	try(x+1, y)
+	// try(x+1, y+1)
+	try(x, y+1)
+	// try(x-1, y+1)
+	try(x-1, y)
+	// try(x-1, y-1)
+}
+
 type stringBoard [][]string
 
 func (b stringBoard) Dims() (width int, height int) {
@@ -57,4 +88,14 @@ func (b stringBoard) String() string {
 		lines = append(lines, strings.Join(row, ""))
 	}
 	return strings.Join(lines, "\n")
+}
+
+func (b stringBoard) Clone() StringBoard {
+	var res stringBoard
+	for _, r := range b {
+		var row []string
+		row = append(row, r...)
+		res = append(res, row)
+	}
+	return res
 }
