@@ -1,6 +1,6 @@
 package gen
 
-// genopts --outfile=gen/options.go 'force'
+//go:generate genopts --outfile=gen/options.go "force"
 
 type Option func(*optionImpl)
 
